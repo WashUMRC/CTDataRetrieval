@@ -51,9 +51,9 @@ if reply == 1
             if ~isempty(file1)
                 mget(f,file1.name);
             end
+            cd(f,'..');
         else
         end
-        cd(f,'..');
     end
 elseif reply == 2
     cDir = cd(f,sample);
@@ -185,71 +185,68 @@ for i = 1:length(xlsList)
     [a b] = size(raw);
     for j = 2:a
         if strcmpi(raw{j,1},'Calibration') == 0
-%             e=0;
-%             for k = 1:b
-%                 if ~isempty(find(useVector == k))
-%                     e=e+1;
-%                     newRaw{j,e} = raw{j,k};
-%                 end
-%             end
             newRaw(j,:) = raw(j,useVector);
         end
     end
-        [a b] = size(newRaw);
-        for j = 2:a
-            c=c+1;
-            d=d+1;
-            for k = 1:b
-                data{c,k} = newRaw{j,k};
-                if isnumeric(data{c,k})
-                    data1{c,k} = num2str(data{c,k});
-                    
-                else
-                    data1{c,k} = data{c,k};
-                    
-                end
+    [a b] = size(newRaw);
+    for j = 2:a
+        c=c+1;
+        d=d+1;
+        for k = 1:b
+            data{c,k} = newRaw{j,k};
+            if isnumeric(data{c,k})
+                data1{c,k} = num2str(data{c,k});
+
+            else
+                data1{c,k} = data{c,k};
+
             end
         end
+%         numLines(i) = d;
     end
-    numLines(i) = d;
-% end
+end
+
 for i = 1:length(useVector)
     header{i} = fullHeader{1,useVector(i)};
 end
 
 header = fullHeader(useVector);
-
-headOut = header;%(indexForOutput);
-datOut = data1;%(:,indexForOutput);
-[a b] = size(datOut);
-delete(h);
-
-h = msgbox('Writing data');
-%write out data
-fid = fopen([storeDir '\' sample ' Cancellous Results.txt'],'w');
-for i = 1:length(headOut)
-    if i < length(headOut)
-        fprintf(fid,'%s\t',headOut{i});
-    else
-        fprintf(fid,'%s\n',headOut{i});
-    end
-end
-
-for i = 1:a
-    for j = 1:b
-        %make numbers strings to print
-        out = datOut{i,j};
-        if ischar(out) ~= 1
-            out = num2str(out);
-        end
-        if j < b
-            fprintf(fid,'%s\t',out);
+try
+    headOut = header;%(indexForOutput);
+    datOut = data1;%(:,indexForOutput);
+    [a b] = size(datOut);
+    delete(h);
+    
+    h = msgbox('Writing data');
+    %write out data
+    fid = fopen([storeDir '\' sample ' Cancellous Results.txt'],'w');
+    for i = 1:length(headOut)
+        if i < length(headOut)
+            fprintf(fid,'%s\t',headOut{i});
         else
-            fprintf(fid,'%s\n',out);
+            fprintf(fid,'%s\n',headOut{i});
         end
     end
+
+    for i = 1:a
+        for j = 1:b
+            %make numbers strings to print
+            out = datOut{i,j};
+            if ischar(out) ~= 1
+                out = num2str(out);
+            end
+            if j < b
+                fprintf(fid,'%s\t',out);
+            else
+                fprintf(fid,'%s\n',out);
+            end
+        end
+    end
+
+    fclose(fid);
+
+    delete(h);
+catch
+    msgbox('No data present!');
 end
 
-fclose(fid);
-
-delete(h);
