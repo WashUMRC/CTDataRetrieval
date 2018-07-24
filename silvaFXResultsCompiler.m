@@ -14,14 +14,14 @@ reply = str2num(answer{1});
 h = msgbox('Connecting');
 % connect to machine and get to correct data directory
 if reply == 1
-    f = ftp('10.21.24.204','microct','mousebone4');
+    f = ftp('10.21.24.204','microct','mousebone4','System','OpenVMS');
     ascii(f);
     disp(f)
     cDir = cd(f,'dk0');
     cDir = cd(f,'data');
     keyword = '*SILVAMOUSEFATIGUE.TXT*';%Identify which text files to grab
 elseif reply == 2
-    f = ftp('10.21.24.203','microct','mousebone4');
+    f = ftp('10.21.24.203','microct','mousebone4','System','OpenVMS');
     ascii(f);
     disp(f)
     cDir = cd(f,'dk0');
